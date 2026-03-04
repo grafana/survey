@@ -124,6 +124,16 @@ func (rr *RuneReader) ReadRune() (rune, int, error) {
 			_, _ = rr.state.reader.Discard(1)
 			return SpecialKeyDelete, 1, nil
 		}
+	case '5': // Page Up: ESC [ 5 ~
+		if keypad == normalKeypad {
+			_, _ = rr.state.reader.Discard(1) // discard '~'
+			return KeyPageUp, 1, nil
+		}
+	case '6': // Page Down: ESC [ 6 ~
+		if keypad == normalKeypad {
+			_, _ = rr.state.reader.Discard(1) // discard '~'
+			return KeyPageDown, 1, nil
+		}
 	}
 
 	// discard the following '~' key from buffer

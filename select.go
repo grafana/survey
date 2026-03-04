@@ -89,6 +89,12 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 	options := s.filterOptions(config)
 	oldFilter := s.filter
 
+	// compute page size early so it's available for Page Up/Down
+	pageSize := s.PageSize
+	if pageSize == 0 {
+		pageSize = config.PageSize
+	}
+
 	// if the user pressed the enter key and the index is a valid option
 	if key == terminal.KeyEnter || key == '\n' {
 		// if the selected index is a valid option
@@ -121,6 +127,16 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 		} else {
 			// increment the selected index
 			s.selectedIndex++
+		}
+	} else if key == terminal.KeyPageUp && len(options) > 0 {
+		s.selectedIndex -= pageSize
+		if s.selectedIndex < 0 {
+			s.selectedIndex = 0
+		}
+	} else if key == terminal.KeyPageDown && len(options) > 0 {
+		s.selectedIndex += pageSize
+		if s.selectedIndex >= len(options) {
+			s.selectedIndex = len(options) - 1
 		}
 		// only show the help message if we have one
 	} else if string(key) == config.HelpInput && s.Help != "" {
@@ -156,15 +172,6 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 		if len(options) > 0 && len(options) <= s.selectedIndex {
 			s.selectedIndex = len(options) - 1
 		}
-	}
-
-	// figure out the options and index to render
-	// figure out the page size
-	pageSize := s.PageSize
-	// if we dont have a specific one
-	if pageSize == 0 {
-		// grab the global value
-		pageSize = config.PageSize
 	}
 
 	// TODO if we have started filtering and were looking at the end of a list

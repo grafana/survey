@@ -18,6 +18,8 @@ const (
 
 	// key codes for arrow keys
 	// https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx
+	VK_PRIOR  = 0x21
+	VK_NEXT   = 0x22
 	VK_DELETE = 0x2E
 	VK_END    = 0x23
 	VK_HOME   = 0x24
@@ -124,6 +126,10 @@ func (rr *RuneReader) ReadRune() (rune, int, error) {
 				return KeyArrowRight, bytesRead, nil
 			case VK_UP:
 				return KeyArrowUp, bytesRead, nil
+			case VK_PRIOR:
+				return KeyPageUp, bytesRead, nil
+			case VK_NEXT:
+				return KeyPageDown, bytesRead, nil
 			case VK_DELETE:
 				return SpecialKeyDelete, bytesRead, nil
 			case VK_HOME:

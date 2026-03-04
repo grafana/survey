@@ -92,6 +92,12 @@ func (m *MultiSelect) OnChange(key rune, config *PromptConfig) {
 	options := m.filterOptions(config)
 	oldFilter := m.filter
 
+	// compute page size early so it's available for Page Up/Down
+	pageSize := m.PageSize
+	if pageSize == 0 {
+		pageSize = config.PageSize
+	}
+
 	if key == terminal.KeyArrowUp || (m.VimMode && key == 'k') {
 		// if we are at the top of the list
 		if m.selectedIndex == 0 {
@@ -109,6 +115,16 @@ func (m *MultiSelect) OnChange(key rune, config *PromptConfig) {
 		} else {
 			// increment the selected index
 			m.selectedIndex++
+		}
+	} else if key == terminal.KeyPageUp {
+		m.selectedIndex -= pageSize
+		if m.selectedIndex < 0 {
+			m.selectedIndex = 0
+		}
+	} else if key == terminal.KeyPageDown {
+		m.selectedIndex += pageSize
+		if m.selectedIndex >= len(options) {
+			m.selectedIndex = len(options) - 1
 		}
 		// if the user pressed down and there is room to move
 	} else if key == terminal.KeySpace {
@@ -170,15 +186,6 @@ func (m *MultiSelect) OnChange(key rune, config *PromptConfig) {
 			m.selectedIndex = len(options) - 1
 		}
 	}
-	// paginate the options
-	// figure out the page size
-	pageSize := m.PageSize
-	// if we dont have a specific one
-	if pageSize == 0 {
-		// grab the global value
-		pageSize = config.PageSize
-	}
-
 	// TODO if we have started filtering and were looking at the end of a list
 	// and we have modified the filter then we should move the page back!
 	opts, idx := paginate(pageSize, options, m.selectedIndex)

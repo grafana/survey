@@ -22,6 +22,8 @@ const (
 	SpecialKeyHome     = '\x01'
 	SpecialKeyEnd      = '\x11'
 	SpecialKeyDelete   = '\x12'
+	KeyPageUp          = '\x15'
+	KeyPageDown        = '\x16'
 	IgnoreKey          = '\000'
 	KeyTab             = '\t'
 )
